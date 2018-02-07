@@ -69,6 +69,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -1738,11 +1739,17 @@ public class MapPanel extends JPanel {
             return mapPanel;
         }
 
+	private JInternalFrame getFrame() {
+		for (Container p = getParent(); p != null; p = p.getParent()) {
+			if (p instanceof JInternalFrame) {
+				return (JInternalFrame) p;
+			}
+		}
+		return null;
+	}
+
         public JMenuBar createMenuBar() {
-            JFrame frame = null;
-            if (SwingUtilities.getWindowAncestor(mapPanel) instanceof JFrame)
-                frame = (JFrame) SwingUtilities.getWindowAncestor(mapPanel);
-            final JFrame frame_ = frame;
+            final JInternalFrame frame = getFrame();
             JMenuBar menuBar = new JMenuBar();
             {
                 JMenu fileMenu = new JMenu("File");
@@ -1751,11 +1758,11 @@ public class MapPanel extends JPanel {
                     {
                         putValue(Action.NAME, "Exit");
                         putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
-                        setEnabled(frame_ != null);
+                        setEnabled(frame != null);
                     }
                     public void actionPerformed(ActionEvent e) {
-                        if (frame_ != null)
-                            frame_.dispose();
+                        if (frame != null)
+                            frame.doDefaultCloseAction();
                     }
                 });
                 menuBar.add(fileMenu);
@@ -1783,7 +1790,7 @@ public class MapPanel extends JPanel {
                     {
                         putValue(Action.NAME, "Float In a Frame");
                         putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
-                        setEnabled(frame_ == null);
+                        setEnabled(frame == null);
                     }
                     public void actionPerformed(ActionEvent e) {
                         if (floatFrame == null) {
