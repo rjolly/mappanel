@@ -10,6 +10,7 @@
  *******************************************************************************/
 
 package com.roots.map;
+
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -78,7 +79,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
@@ -1925,11 +1925,6 @@ public class MapPanel extends JPanel {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (Exception e) {
-                    // ignore
-                }
                 launchUI();
             }
         });
