@@ -1574,10 +1574,7 @@ public class MapPanel extends JPanel {
                         String s = e.getDescription();
                         int index = Integer.valueOf(s);
                         SearchResult result = results.get(index);
-                        MapPanel.this.setZoom(result.getZoom() < 1 || result.getZoom() > getTileServer().getMaxZoom() ? 8 : result.getZoom());
-                        Point position = MapPanel.this.computePosition(new Point2D.Double(result.getLon(), result.getLat()));
-                        MapPanel.this.setCenterPosition(position);
-                        MapPanel.this.repaint();
+                        MapPanel.this.setLocation(result.getLon(), result.getLat(), result.getZoom() < 1 || result.getZoom() > getTileServer().getMaxZoom() ? 8 : result.getZoom());
                     }
                 }
             });
@@ -1709,6 +1706,13 @@ public class MapPanel extends JPanel {
             SwingUtilities.invokeLater(r);
         }
     }
+
+	public void setLocation(final double lon, final double lat, final int zoom) {
+		setZoom(zoom);
+		final Point position = computePosition(new Point2D.Double(lon, lat));
+		setCenterPosition(position);
+		repaint();
+	}
 
     public static final class Gui extends JPanel {
 
