@@ -1886,7 +1886,7 @@ public class MapPanel extends JPanel {
                         putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
                     }
                     public void actionPerformed(ActionEvent e) {
-                        JOptionPane.showMessageDialog(mapPanel, ABOUT_MSG, "About MapPanel ...", JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showInternalMessageDialog(mapPanel, ABOUT_MSG, "About MapPanel ...", JOptionPane.PLAIN_MESSAGE);
                     }
                 });
                 menuBar.add(helpMenu);
