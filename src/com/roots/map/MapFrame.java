@@ -19,6 +19,7 @@ public class MapFrame extends Frame {
 		setTitle("Maps");
 		setFrameIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent16.gif")));
 		setIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent24.gif")));
+		setScheme("geo");
 	}
 
 	@Override
@@ -30,7 +31,6 @@ public class MapFrame extends Frame {
 
 	@Override
 	public void close() {
-		setJMenuBar(null);
 		getContentPane().remove(gui);
 		gui = null;
 	}
