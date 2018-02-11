@@ -2,6 +2,9 @@ package com.roots.map;
 
 import java.awt.BorderLayout;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.HashMap;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
@@ -24,17 +27,43 @@ public class MapFrame extends Frame {
 	}
 
 	@Override
+	public URI getURI() {
+		if (gui != null) try {
+			final MapPanel panel = gui.getMapPanel();
+			final double[] location = panel.getLocationAsDouble();
+			String str = String.format("%f,%f", location[1], location[0]);
+			final int zoom = (int) location[2];
+			if (zoom != 8) {
+				str += ";zoom=" + zoom;
+			}
+			return new URI("geo", str, null);
+		} catch (final URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public void open() {
 		if (gui == null) {
 			gui = new MapPanel.Gui();
 			getContentPane().add(gui, BorderLayout.CENTER);
 			setJMenuBar(gui.createMenuBar());
 		}
-		final URI uri = getURI();
+		final URI uri = super.getURI();
 		if (uri != null) {
+			final Map<String, String> map = new HashMap<>();
 			final String ssp = uri.getSchemeSpecificPart();
-			final String s[] = ssp.split(",");
-			gui.getMapPanel().setLocation(Double.parseDouble(s[1]), Double.parseDouble(s[0]), 8);
+			final String ss[] = ssp.split(";");
+			for (final String kv : ss) {
+				final String s[] = kv.split("=");
+				if (s.length > 1) {
+					map.put(s[0], s[1]);
+				}
+			}
+			final String s[] = ss[0].split(",");
+			final int zoom = map.containsKey("zoom")?Integer.parseInt(map.get("zoom")):8;
+			gui.getMapPanel().setLocation(Double.parseDouble(s[1]), Double.parseDouble(s[0]), zoom);
 		}
 	}
 

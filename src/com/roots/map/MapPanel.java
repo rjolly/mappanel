@@ -1707,6 +1707,13 @@ public class MapPanel extends JPanel {
         }
     }
 
+	public double[] getLocationAsDouble() {
+		final int zoom = getZoom();
+		final Point position = getCenterPosition();
+		final Point2D.Double lonlat = getLongitudeLatitude(position);
+		return new double[] {lonlat.x, lonlat.y, zoom};
+	}
+
 	public void setLocation(final double lon, final double lat, final int zoom) {
 		setZoom(zoom);
 		final Point position = computePosition(new Point2D.Double(lon, lat));
