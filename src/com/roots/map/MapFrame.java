@@ -32,7 +32,7 @@ public class MapFrame extends Frame {
 			final MapPanel panel = gui.getMapPanel();
 			final double[] location = panel.getLocationAsDouble();
 			String str = String.format("%f,%f", location[1], location[0]);
-			final int zoom = (int) location[2];
+			final int zoom = panel.getZoom();
 			if (zoom != 8) {
 				str += ";zoom=" + zoom;
 			}
@@ -62,8 +62,11 @@ public class MapFrame extends Frame {
 				}
 			}
 			final String s[] = ss[0].split(",");
-			final int zoom = map.containsKey("zoom")?Integer.parseInt(map.get("zoom")):8;
-			gui.getMapPanel().setLocation(Double.parseDouble(s[1]), Double.parseDouble(s[0]), zoom);
+			final MapPanel panel = gui.getMapPanel();
+			if (map.containsKey("zoom")) {
+				panel.setZoom(Integer.parseInt(map.get("zoom")));
+			}
+			panel.setLocation(Double.parseDouble(s[1]), Double.parseDouble(s[0]));
 		}
 	}
 

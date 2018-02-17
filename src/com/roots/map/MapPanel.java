@@ -1574,7 +1574,8 @@ public class MapPanel extends JPanel {
                         String s = e.getDescription();
                         int index = Integer.valueOf(s);
                         SearchResult result = results.get(index);
-                        MapPanel.this.setLocation(result.getLon(), result.getLat(), result.getZoom() < 1 || result.getZoom() > getTileServer().getMaxZoom() ? 8 : result.getZoom());
+                        MapPanel.this.setZoom(result.getZoom() < 1 || result.getZoom() > getTileServer().getMaxZoom() ? 8 : result.getZoom());
+                        MapPanel.this.setLocation(result.getLon(), result.getLat());
                     }
                 }
             });
@@ -1708,14 +1709,12 @@ public class MapPanel extends JPanel {
     }
 
 	public double[] getLocationAsDouble() {
-		final int zoom = getZoom();
 		final Point position = getCenterPosition();
 		final Point2D.Double lonlat = getLongitudeLatitude(position);
-		return new double[] {lonlat.x, lonlat.y, zoom};
+		return new double[] {lonlat.x, lonlat.y};
 	}
 
-	public void setLocation(final double lon, final double lat, final int zoom) {
-		setZoom(zoom);
+	public void setLocation(final double lon, final double lat) {
 		final Point position = computePosition(new Point2D.Double(lon, lat));
 		setCenterPosition(position);
 		repaint();
