@@ -91,7 +91,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-
 /**
  * MapPanel display tiles from openstreetmap as is. This simple minimal viewer supports zoom around mouse-click center and has a simple api.
  * A number of tiles are cached. See {@link #CACHE_SIZE} constant. If you use this it will create traffic on the tileserver you are
@@ -177,8 +176,6 @@ public class MapPanel extends JPanel {
 
     private Object animationRenderingHints = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
     private static final int ANIMATION_FPS = 15, ANIMATION_DURARTION_MS = 500;
-    
-
 
     /* basically not be changed */
     private static final int TILE_SIZE = 256;
@@ -235,7 +232,7 @@ public class MapPanel extends JPanel {
     }
 
     public MapPanel(Point mapPosition, int zoom) {
-        
+
         try {
             // disable animation on windows7 for now
             useAnimations = !("Windows Vista".equals(System.getProperty("os.name")) && "6.1".equals(System.getProperty("os.version")));
@@ -243,7 +240,7 @@ public class MapPanel extends JPanel {
             // be defensive here
             log.log(Level.INFO, "failed to check for win7", e);
         }
-        
+
         setLayout(new MapLayout());
         setOpaque(true);
         setBackground(new Color(0xc0, 0xc0, 0xc0));
@@ -315,7 +312,7 @@ public class MapPanel extends JPanel {
             zoomOut(new Point(getWidth() / 2, getHeight() / 2));
         checkActiveTileServer();
     }
-    
+
     /**
      * Iff animations are used, during the animation this method
      * will return <code>true</code>. One might use this state to disable
@@ -345,11 +342,11 @@ public class MapPanel extends JPanel {
     public SearchPanel getSearchPanel() {
         return searchPanel;
     }
-    
+
     public TileCache getCache() {
         return cache;
     }
-    
+
     public Stats getStats() {
         return stats;
     }
@@ -510,7 +507,7 @@ public class MapPanel extends JPanel {
                 position2lon(position.x, getZoom()),
                 position2lat(position.y, getZoom()));
     }
-    
+
     public Point computePosition(Point.Double coords) {
         int x = lon2position(coords.x, getZoom());
         int y = lat2position(coords.y, getZoom());
@@ -530,7 +527,7 @@ public class MapPanel extends JPanel {
         position.y -= mapPosition.y;
         return position;
     }
-    
+
     /**
      * Gets the coordinates to use for overdraw rendering, eg the swing coordinates
      * that you could use in paintComponent or a glasspane.
@@ -541,7 +538,7 @@ public class MapPanel extends JPanel {
     public Point getScreenCoordinates(double lon, double lat) {
         return getScreenCoordinates(new Point.Double(lon, lat));
     }
-    
+
     protected void paintComponent(Graphics gOrig) {
         super.paintComponent(gOrig);
         Graphics2D g = (Graphics2D) gOrig.create();
@@ -612,7 +609,7 @@ public class MapPanel extends JPanel {
                     }
                     dy += TILE_SIZE;
                 }
-                
+
                 if (getScale() == 1d && mapPanel.magnifyRegion != null) {
                     Rectangle magnifyRegion = new Rectangle(mapPanel.magnifyRegion);
                     magnifyRegion.translate(-mapPosition.x, -mapPosition.y);
@@ -660,9 +657,7 @@ public class MapPanel extends JPanel {
                 g.drawString(s, dx + 4+ 8, dy + 4 + 12);
             }
         }
-
-
-    }
+    }
 
     private void paintInternal(Graphics2D g) {
         stats.reset();
@@ -677,7 +672,7 @@ public class MapPanel extends JPanel {
             Point position = new Point(smoothPosition.x, smoothPosition.y);
             Painter painter = new Painter(this, getZoom() + smoothOffset);
             painter.setScale(smoothScale);
-            
+
             float t = (float) (animation == null ? 1f : 1 - animation.getFactor());
             painter.setTransparency(t);
             painter.paint(g, position, smoothPivot);
@@ -704,8 +699,7 @@ public class MapPanel extends JPanel {
         }
     }
 
-
-    private void drawScaledRect(Graphics2D g, int cx, int cy, double f, double scale) {
+    private void drawScaledRect(Graphics2D g, int cx, int cy, double f, double scale) {
         AffineTransform oldTransform = g.getTransform();
         g.translate(cx, cy);
         g.scale(scale, scale);
@@ -851,8 +845,7 @@ public class MapPanel extends JPanel {
         g.fillPolygon(new int[] { 10, 4, 10} , new int[] { 5, 8, 11 }, 3);
         image.flush();
         return image;
-
-    }
+    }
     private static BufferedImage makeYArrow(Color background) {
         BufferedImage image = makeIcon(background);
         Graphics2D g = (Graphics2D) image.getGraphics();
@@ -878,14 +871,13 @@ public class MapPanel extends JPanel {
         image.flush();
         return image;
     }
-
-
+
     //-------------------------------------------------------------------------
     // helpers
     private enum AnimationType {
         ZOOM_IN, ZOOM_OUT
     }
-    
+
     private static abstract class Animation implements ActionListener {
 
         private final AnimationType type;
@@ -903,7 +895,7 @@ public class MapPanel extends JPanel {
             timer.setInitialDelay(0);
             timer.setRepeats(true);
         }
-        
+
         public AnimationType getType() {
             return type;
         }
@@ -991,8 +983,7 @@ public class MapPanel extends JPanel {
                 return false;
             return true;
         }
-
-    }
+    }
 
     private static class TileCache {
         private LinkedHashMap<Tile,Image> map = new LinkedHashMap<Tile,Image>(CACHE_SIZE, 0.75f, true) {
@@ -1025,23 +1016,23 @@ public class MapPanel extends JPanel {
             dt = 0;
         }
     }
-    
+
     public static class CustomSplitPane extends JComponent  {
         private static final int SPACER_SIZE = 4;
         private final boolean horizonal;
         private final JComponent spacer;
-        
+
         private double split = 0.5;
         private int dx, dy;
         private Component componentOne, componentTwo;
-        
+
         public CustomSplitPane(boolean horizonal) {
             this.spacer = new JPanel();
             this.spacer.setOpaque(false);
             this.spacer.setCursor(horizonal ? Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR) : Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
             this.dx = this.dy = -1;
             this.horizonal = horizonal;
-            
+
             /* because of jdk1.5, javafx */
             class SpacerMouseAdapter extends MouseAdapter implements MouseMotionListener {
                 public void mouseReleased(MouseEvent e) {
@@ -1059,7 +1050,7 @@ public class MapPanel extends JPanel {
                     spacer.setOpaque(false);
                     repaint();
                 }
-                
+
                 public void mouseDragged(MouseEvent e) {
                     dx = e.getX() + spacer.getX(); 
                     dy = e.getY() + spacer.getY();
@@ -1071,36 +1062,36 @@ public class MapPanel extends JPanel {
                     }
                     repaint();
                 }
-                
+
                 public void mouseMoved(MouseEvent e) {
                 }
             };
             SpacerMouseAdapter mouseAdapter = new SpacerMouseAdapter();
             spacer.addMouseListener(mouseAdapter);
             spacer.addMouseMotionListener(mouseAdapter);
-            
+
             setLayout(new LayoutManager() {
                 public void addLayoutComponent(String name, Component comp) {
                 }
-                
+
                 public void removeLayoutComponent(Component comp) {
                 }
-                
+
                 public Dimension minimumLayoutSize(Container parent) {
                     return new Dimension(1, 1);
                 }
-                
+
                 public Dimension preferredLayoutSize(Container parent) {
                     return new Dimension(128, 128);
                 }
-                
+
                 public void layoutContainer(Container parent) {
                     Insets insets = parent.getInsets();
                     int width = parent.getWidth();
                     int height = parent.getHeight();
                     int availw = width - insets.left - insets.right;
                     int availh = height - insets.top - insets.bottom;
-                    
+
                     if (CustomSplitPane.this.horizonal) {
                         availw -= SPACER_SIZE;
                         int width1 = Math.max(0, (int) Math.floor(split * availw));
@@ -1136,11 +1127,11 @@ public class MapPanel extends JPanel {
             });
             add(spacer);
         }
-        
+
         public double getSplit() {
             return split;
         }
-        
+
         public void setSplit(double split) {
             if (split < 0)
                 split = 0;
@@ -1150,7 +1141,7 @@ public class MapPanel extends JPanel {
             invalidate();
             validate();
         }
-        
+
         public void setComponentOne(Component component) {
             this.componentOne = component;
             if (componentOne != null)
@@ -1416,8 +1407,7 @@ public class MapPanel extends JPanel {
         }
     }
 
-
-    private final class MapLayout implements LayoutManager {
+    private final class MapLayout implements LayoutManager {
 
         public void addLayoutComponent(String name, Component comp) {
         }
@@ -1466,8 +1456,7 @@ public class MapPanel extends JPanel {
             }
             htmlDocument.setAsynchronousLoadPriority(-1);
         }
-
-    }
+    }
 
     public static final class SearchResult {
         private String type;
@@ -1525,8 +1514,7 @@ public class MapPanel extends JPanel {
             return "SearchResult [category=" + category + ", lat=" + lat + ", lon=" + lon
                     + ", name=" + name + ", type=" + type + ", zoom=" + zoom + ", description=" + description + "]";
         }
-
-    }
+    }
 
     public final class SearchPanel extends JPanel {
 
@@ -1735,7 +1723,7 @@ public class MapPanel extends JPanel {
             mapPanel.getOverlayPanel().setVisible(false);
             mapPanel.setMinimumSize(new Dimension(1, 1));
             mapPanel.getSearchPanel().setMinimumSize(new Dimension(1, 1));
-            
+
             customSplitPane.setSplit(.3);
             customSplitPane.setComponentOne(mapPanel.getSearchPanel());
             customSplitPane.setComponentTwo(mapPanel);
@@ -1908,8 +1896,7 @@ public class MapPanel extends JPanel {
         private boolean isWebstart() {
             return System.getProperty("javawebstart.version") != null && System.getProperty("javawebstart.version").length() > 0;
         }
-
-    }
+    }
 
     public static MapPanel createMapPanel(Point mapPosition, int zoom) {
         MapPanel mapPanel = new MapPanel(mapPosition, zoom);
@@ -1922,7 +1909,7 @@ public class MapPanel extends JPanel {
         MapPanel mapPanel = createMapPanel(mapPosition, zoom);
         return new MapPanel.Gui(mapPanel);
     }
-    
+
     public static void launchUI() {
 
         final JFrame frame = new JFrame();
@@ -1948,5 +1935,4 @@ public class MapPanel extends JPanel {
         });
     }
 }
-
-
+
