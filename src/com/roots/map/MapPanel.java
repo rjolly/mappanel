@@ -165,9 +165,6 @@ public class MapPanel extends JPanel {
 
     /* constants ... */
     private static final TileServer[] TILESERVERS = {
-        new TileServer("https://basemaps.cartocdn.com/rastertiles/voyager/", 18),
-        new TileServer("http://tile.openstreetmap.org/", 18),
-//        new TileServer("http://tah.openstreetmap.org/Tiles/tile/", 17),
     };
 
     private static final String NAMEFINDER_URL = "http://nominatim.openstreetmap.org/search";

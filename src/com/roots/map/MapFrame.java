@@ -47,6 +47,7 @@ public class MapFrame extends Frame {
 	public void open() {
 		if (gui == null) {
 			gui = new MapPanel.Gui();
+			gui.getMapPanel().setTileServer("https://basemaps.cartocdn.com/rastertiles/voyager/");
 			getContentPane().add(gui, BorderLayout.CENTER);
 			setJMenuBar(gui.createMenuBar());
 		}
