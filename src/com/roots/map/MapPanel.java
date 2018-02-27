@@ -207,7 +207,7 @@ public class MapPanel extends JPanel {
     private Point mapPosition = new Point(0, 0);
     private int zoom;
 
-    private TileServer tileServer = TILESERVERS[0];
+    private TileServer tileServer;
 
     private DragListener mouseListener = new DragListener();
     private TileCache cache = new TileCache();
@@ -1861,28 +1861,6 @@ public class MapPanel extends JPanel {
                 searchPanelMenuItem.setSelected(true);
                 viewMenu.add(searchPanelMenuItem);
                 menuBar.add(viewMenu);
-            }
-            {
-                JMenu tileServerMenu = new JMenu("Tileservers");
-                tileServerMenu.setMnemonic(KeyEvent.VK_T);
-                ButtonGroup bg = new ButtonGroup();
-                int index = 0;
-                for (final TileServer curr : TILESERVERS) {
-                    JCheckBoxMenuItem item = new JCheckBoxMenuItem(curr.getURL());
-                    bg.add(item);
-                    item.setSelected(curr.equals(mapPanel.tileServer));
-                    item.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            mapPanel.setTileServer(curr);
-                            mapPanel.repaint();
-                        }
-                    });
-                    if (index < 9)
-                        item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1 + index, InputEvent.CTRL_DOWN_MASK));
-                    tileServerMenu.add(item);
-                    ++index;
-                }
-                menuBar.add(tileServerMenu);
             }
             {
                 JMenu helpMenu = new JMenu("Help");

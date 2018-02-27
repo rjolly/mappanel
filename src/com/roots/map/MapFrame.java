@@ -1,16 +1,30 @@
 package com.roots.map;
 
 import java.awt.BorderLayout;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.HashMap;
-import javax.swing.Icon;
+import java.util.Properties;
+import java.util.prefs.PreferenceChangeEvent;
+import java.util.prefs.PreferenceChangeListener;
+import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
-import javax.swing.JMenuBar;
 import linoleum.application.Frame;
 
 public class MapFrame extends Frame {
+	private final OptionPanel options = new OptionPanel();
+	private final PreferenceChangeListener listener = new PreferenceChangeListener() {
+		@Override
+		public void preferenceChange(final PreferenceChangeEvent evt) {
+			if (evt.getKey().equals(getKey("tileServer"))) {
+				update();
+			}
+		}
+	};
+	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
+	private final Properties properties = new Properties();
 	private MapPanel.Gui gui;
 
 	public MapFrame() {
@@ -21,8 +35,14 @@ public class MapFrame extends Frame {
 		setResizable(true);
 		setSize(800, 600);
 		setTitle("Maps");
+		try {
+			properties.load(getClass().getResourceAsStream("MapPanel.properties"));
+		} catch (final IOException  e) {
+			e.printStackTrace();
+		}
 		setFrameIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent16.gif")));
 		setIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent24.gif")));
+		setOptionPanel(options);
 		setScheme("geo");
 	}
 
@@ -47,9 +67,10 @@ public class MapFrame extends Frame {
 	public void open() {
 		if (gui == null) {
 			gui = new MapPanel.Gui();
-			gui.getMapPanel().setTileServer("https://basemaps.cartocdn.com/rastertiles/voyager/");
+			prefs.addPreferenceChangeListener(listener);
 			getContentPane().add(gui, BorderLayout.CENTER);
 			setJMenuBar(gui.createMenuBar());
+			update();
 		}
 		final URI uri = super.getURI();
 		if (uri != null) {
@@ -75,6 +96,25 @@ public class MapFrame extends Frame {
 	public void close() {
 		setURI(null);
 		getContentPane().remove(gui);
+		prefs.removePreferenceChangeListener(listener);
 		gui = null;
+	}
+
+	@Override
+	public void load() {
+		options.getTextField().setText(getTileServer());
+	}
+
+	private void update() {
+		gui.getMapPanel().setTileServer(getTileServer());
+	}
+
+	private String getTileServer() {
+		return prefs.get(getKey("tileServer"), properties.getProperty("tileServer"));
+	}
+
+	@Override
+	public void save() {
+		prefs.put(getKey("tileServer"), options.getTextField().getText());
 	}
 }

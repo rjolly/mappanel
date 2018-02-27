@@ -1,9 +1,15 @@
 package com.roots.map;
 
+import javax.swing.JTextField;
+
 public class OptionPanel extends linoleum.application.OptionPanel {
 
 	public OptionPanel() {
 		initComponents();
+	}
+
+	public JTextField getTextField() {
+		return jTextField1;
 	}
 
 	@SuppressWarnings("unchecked")
