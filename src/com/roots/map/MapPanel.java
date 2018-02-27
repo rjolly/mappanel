@@ -268,24 +268,28 @@ public class MapPanel extends JPanel {
 
     private void checkTileServers() {
         for (TileServer tileServer : TILESERVERS) {
-            String urlstring = getTileString(tileServer, 1, 1, 1);
-            try {
-                URL url = new URL(urlstring);
-                Object content = url.getContent();
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "failed to get content from url " + urlstring);
-                tileServer.setBroken(true);
-            }
+            checkTileServer(tileServer);
+        }
+    }
+
+    private void checkTileServer(final TileServer tileServer) {
+        String urlstring = getTileString(tileServer, 1, 1, 1);
+        try {
+            URL url = new URL(urlstring);
+            Object content = url.getContent();
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "failed to get content from url " + urlstring);
+            tileServer.setBroken(true);
         }
     }
 
     private void checkActiveTileServer() {
-        if (getTileServer() != null && getTileServer().isBroken()) {
+        if (tileServer != null && tileServer.isBroken()) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    JOptionPane.showMessageDialog(
+                    JOptionPane.showInternalMessageDialog(
                             SwingUtilities.getWindowAncestor(MapPanel.this),
-                            "The tileserver \"" + getTileServer().getURL() + "\" could not be reached.\r\nMaybe configuring a http-proxy is required.",
+                            "The tileserver \"" + tileServer.getURL() + "\" could not be reached.\r\nMaybe configuring a http-proxy is required.",
                             "TileServer not reachable.", JOptionPane.ERROR_MESSAGE);
                 }
             });
@@ -293,7 +297,7 @@ public class MapPanel extends JPanel {
     }
 
     public void nextTileServer() {
-        int index = Arrays.asList(TILESERVERS).indexOf(getTileServer());
+        int index = Arrays.asList(TILESERVERS).indexOf(tileServer);
         if (index == -1)
             return;
         setTileServer(TILESERVERS[(index + 1) % TILESERVERS.length]);
@@ -380,7 +384,7 @@ public class MapPanel extends JPanel {
         if (zoom == this.zoom)
             return;
         int oldZoom = this.zoom;
-        this.zoom = Math.min(getTileServer().getMaxZoom(), zoom);
+        this.zoom = Math.min(tileServer.getMaxZoom(), zoom);
         mapSize.width = getXMax();
         mapSize.height = getYMax();
         firePropertyChange("zoom", oldZoom, zoom);
@@ -449,7 +453,7 @@ public class MapPanel extends JPanel {
     }
 
     public void zoomIn(Point pivot) {
-        if (getZoom() >= getTileServer().getMaxZoom())
+        if (getZoom() >= tileServer.getMaxZoom())
             return;
         Point mapPosition = getMapPosition();
         int dx = pivot.x;
@@ -632,7 +636,7 @@ public class MapPanel extends JPanel {
             boolean drawImage = DRAW_IMAGES && tileInBounds;
             if (drawImage) {
                 TileCache cache = mapPanel.getCache();
-                TileServer tileServer = mapPanel.getTileServer();
+                TileServer tileServer = mapPanel.tileServer;
                 Image image = cache.get(tileServer, x, y, zoom);
                 if (image == null) {
                     final String url = getTileString(tileServer, x, y, zoom);
@@ -1562,7 +1566,7 @@ public class MapPanel extends JPanel {
                         String s = e.getDescription();
                         int index = Integer.valueOf(s);
                         SearchResult result = results.get(index);
-                        MapPanel.this.setZoom(result.getZoom() < 1 || result.getZoom() > getTileServer().getMaxZoom() ? 8 : result.getZoom());
+                        MapPanel.this.setZoom(result.getZoom() < 1 || result.getZoom() > tileServer.getMaxZoom() ? 8 : result.getZoom());
                         MapPanel.this.setLocation(result.getLon(), result.getLat());
                     }
                 }
@@ -1705,6 +1709,13 @@ public class MapPanel extends JPanel {
 	public void setLocation(final double lon, final double lat) {
 		final Point position = computePosition(new Point2D.Double(lon, lat));
 		setCenterPosition(position);
+		repaint();
+	}
+
+	public void setTileServer(final String url) {
+		final TileServer tileServer = new TileServer(url, 18);
+		checkTileServer(tileServer);
+		setTileServer(tileServer);
 		repaint();
 	}
 
@@ -1862,7 +1873,7 @@ public class MapPanel extends JPanel {
                 for (final TileServer curr : TILESERVERS) {
                     JCheckBoxMenuItem item = new JCheckBoxMenuItem(curr.getURL());
                     bg.add(item);
-                    item.setSelected(curr.equals(mapPanel.getTileServer()));
+                    item.setSelected(curr.equals(mapPanel.tileServer));
                     item.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             mapPanel.setTileServer(curr);
