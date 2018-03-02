@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
@@ -59,7 +60,7 @@ public class MapFrame extends Frame {
 		if (gui != null) try {
 			final MapPanel panel = gui.getMapPanel();
 			final double[] location = panel.getLocationAsDouble();
-			String str = String.format("%f,%f", location[1], location[0]);
+			String str = String.format(Locale.ROOT, "%f,%f", location[1], location[0]);
 			final int zoom = panel.getZoom();
 			if (zoom != 8) {
 				str += ";zoom=" + zoom;
