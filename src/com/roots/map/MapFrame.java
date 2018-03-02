@@ -1,6 +1,8 @@
 package com.roots.map;
 
 import java.awt.BorderLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,6 +45,11 @@ public class MapFrame extends Frame {
 		}
 		setFrameIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent16.gif")));
 		setIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent24.gif")));
+		addComponentListener(new ComponentAdapter() {
+			public void componentShown(final ComponentEvent e) {
+				updateLocation();
+			}
+		});
 		setOptionPanel(options);
 		setScheme("geo");
 	}
@@ -84,7 +91,12 @@ public class MapFrame extends Frame {
 			setJMenuBar(gui.createMenuBar());
 			setURI(getHome());
 			update();
+		} else {
+			updateLocation();
 		}
+	}
+
+	private void updateLocation() {
 		final URI uri = super.getURI();
 		if (uri != null) {
 			final Map<String, String> map = new HashMap<>();
