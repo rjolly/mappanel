@@ -46,6 +46,14 @@ public class MapFrame extends Frame {
 		setScheme("geo");
 	}
 
+	private void setURI(final String str) {
+		if (!str.isEmpty()) try {
+			setURI(new URI(str));
+		} catch (final URISyntaxException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	@Override
 	public URI getURI() {
 		if (gui != null) try {
@@ -69,7 +77,11 @@ public class MapFrame extends Frame {
 			gui = new MapPanel.Gui();
 			prefs.addPreferenceChangeListener(listener);
 			getContentPane().add(gui, BorderLayout.CENTER);
+			gui.getMapPanel().getOverlayPanel().setVisible(showInfoPanel());
+			gui.getMapPanel().getControlPanel().setVisible(showControlPanel());
+			gui.getMapPanel().getSearchPanel().setVisible(showSearchPanel());
 			setJMenuBar(gui.createMenuBar());
+			setURI(getHome());
 			update();
 		}
 		final URI uri = super.getURI();
@@ -94,7 +106,7 @@ public class MapFrame extends Frame {
 
 	@Override
 	public void close() {
-		setURI(null);
+		setURI((URI) null);
 		getContentPane().remove(gui);
 		prefs.removePreferenceChangeListener(listener);
 		gui = null;
@@ -102,7 +114,11 @@ public class MapFrame extends Frame {
 
 	@Override
 	public void load() {
-		options.getTextField().setText(getTileServer());
+		options.getTextField1().setText(getTileServer());
+		options.getTextField2().setText(getHome());
+		options.getCheckBox1().setSelected(showInfoPanel());
+		options.getCheckBox2().setSelected(showControlPanel());
+		options.getCheckBox3().setSelected(showSearchPanel());
 	}
 
 	private void update() {
@@ -113,8 +129,28 @@ public class MapFrame extends Frame {
 		return prefs.get(getKey("tileServer"), properties.getProperty("tileServer"));
 	}
 
+	private String getHome() {
+		return prefs.get(getKey("home"), properties.getProperty("home" ,""));
+	}
+
+	private boolean showInfoPanel() {
+		return prefs.getBoolean(getKey("showInfoPanel"), Boolean.parseBoolean(properties.getProperty("showInfoPanel" ,"false")));
+	}
+
+	private boolean showControlPanel() {
+		return prefs.getBoolean(getKey("showControlPanel"), Boolean.parseBoolean(properties.getProperty("showControlPanel" ,"false")));
+	}
+
+	private boolean showSearchPanel() {
+		return prefs.getBoolean(getKey("showSearchPanel"), Boolean.parseBoolean(properties.getProperty("showSearchPanel" ,"false")));
+	}
+
 	@Override
 	public void save() {
-		prefs.put(getKey("tileServer"), options.getTextField().getText());
+		prefs.put(getKey("tileServer"), options.getTextField1().getText());
+		prefs.put(getKey("home"), options.getTextField2().getText());
+		prefs.putBoolean(getKey("showInfoPanel"), options.getCheckBox1().isSelected());
+		prefs.putBoolean(getKey("showControlPanel"), options.getCheckBox2().isSelected());
+		prefs.putBoolean(getKey("showSearchPanel"), options.getCheckBox3().isSelected());
 	}
 }

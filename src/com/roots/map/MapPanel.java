@@ -60,7 +60,6 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -164,9 +163,6 @@ public class MapPanel extends JPanel {
     }
 
     /* constants ... */
-    private static final TileServer[] TILESERVERS = {
-    };
-
     private static final String NAMEFINDER_URL = "http://nominatim.openstreetmap.org/search";
     private static final int PREFERRED_WIDTH = 320;
     private static final int PREFERRED_HEIGHT = 200;
@@ -181,7 +177,7 @@ public class MapPanel extends JPanel {
         "MapPanel - Minimal Openstreetmap/Maptile Viewer\r\n" +
         "Web: http://mappanel.sourceforge.net\r\n" +
         "Written by stepan.rutz. Contact stepan.rutz@gmx.de\r\n\r\n" +
-        "Tileserver-URLs: " + Arrays.toString(TILESERVERS) + "\r\n" +
+        "Tileserver-URL: %s\r\n" +
         "Namefinder-URL: " + NAMEFINDER_URL + "\r\n" +
         "Tileserver and Namefinder are part of Openstreetmap or associated projects.\r\n\r\n" +
         "MapPanel gets its data from these servers.\r\n\r\n" +
@@ -225,11 +221,6 @@ public class MapPanel extends JPanel {
     private Rectangle magnifyRegion;
 
     public MapPanel() {
-        this(new Point(8282, 5179), 6);
-    }
-
-    public MapPanel(Point mapPosition, int zoom) {
-
         try {
             // disable animation on windows7 for now
             useAnimations = !("Windows Vista".equals(System.getProperty("os.name")) && "6.1".equals(System.getProperty("os.version")));
@@ -246,27 +237,9 @@ public class MapPanel extends JPanel {
         addMouseListener(mouseListener);
         addMouseMotionListener(mouseListener);
         addMouseWheelListener(mouseListener);
-        //add(slider);
-        setZoom(zoom);
-        setMapPosition(mapPosition);
-//        if (false) {
-//            SwingUtilities.invokeLater(new Runnable() {
-//                public void run() {
-//                    setZoom(10);
-//                    setCenterPosition(computePosition(new Point2D.Double(-0.11, 51.51)));
-//                }
-//            });
-//        }
 
         searchPanel = new SearchPanel();
-        checkTileServers();
         checkActiveTileServer();
-    }
-
-    private void checkTileServers() {
-        for (TileServer tileServer : TILESERVERS) {
-            checkTileServer(tileServer);
-        }
     }
 
     private void checkTileServer(final TileServer tileServer) {
@@ -291,14 +264,6 @@ public class MapPanel extends JPanel {
                 }
             });
         }
-    }
-
-    public void nextTileServer() {
-        int index = Arrays.asList(TILESERVERS).indexOf(tileServer);
-        if (index == -1)
-            return;
-        setTileServer(TILESERVERS[(index + 1) % TILESERVERS.length]);
-        repaint();
     }
 
     public TileServer getTileServer() {
@@ -1717,7 +1682,6 @@ public class MapPanel extends JPanel {
 	}
 
     public static final class Gui extends JPanel {
-
         private final MapPanel mapPanel;
         private final CustomSplitPane customSplitPane = new CustomSplitPane(true);
 
@@ -1728,7 +1692,6 @@ public class MapPanel extends JPanel {
         public Gui(MapPanel mapPanel) {
             super(new BorderLayout());
             this.mapPanel = mapPanel;
-            mapPanel.getOverlayPanel().setVisible(false);
             mapPanel.setMinimumSize(new Dimension(1, 1));
             mapPanel.getSearchPanel().setMinimumSize(new Dimension(1, 1));
 
@@ -1828,7 +1791,7 @@ public class MapPanel extends JPanel {
                         oldParent.repaint();
                     }
                 }));
-                viewMenu.add(new JCheckBoxMenuItem(new AbstractAction() {
+                JCheckBoxMenuItem infoPanelMenuItem = new JCheckBoxMenuItem(new AbstractAction() {
                     {
                         putValue(Action.NAME, "Show Infopanel");
                         putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
@@ -1836,8 +1799,9 @@ public class MapPanel extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         mapPanel.getOverlayPanel().setVisible(!mapPanel.getOverlayPanel().isVisible());
                     }
-
-                }));
+                });
+                infoPanelMenuItem.setSelected(mapPanel.getOverlayPanel().isVisible());
+                viewMenu.add(infoPanelMenuItem);
                 JCheckBoxMenuItem controlPanelMenuItem = new JCheckBoxMenuItem(new AbstractAction() {
                     {
                         putValue(Action.NAME, "Show Controlpanel");
@@ -1847,7 +1811,7 @@ public class MapPanel extends JPanel {
                         mapPanel.getControlPanel().setVisible(!mapPanel.getControlPanel().isVisible());
                     }
                 });
-                controlPanelMenuItem.setSelected(true);
+                controlPanelMenuItem.setSelected(mapPanel.getControlPanel().isVisible());
                 viewMenu.add(controlPanelMenuItem);
                 JCheckBoxMenuItem searchPanelMenuItem = new JCheckBoxMenuItem(new AbstractAction() {
                     {
@@ -1858,7 +1822,7 @@ public class MapPanel extends JPanel {
                         mapPanel.getSearchPanel().setVisible(!mapPanel.getSearchPanel().isVisible());
                     }
                 });
-                searchPanelMenuItem.setSelected(true);
+                searchPanelMenuItem.setSelected(mapPanel.getSearchPanel().isVisible());
                 viewMenu.add(searchPanelMenuItem);
                 menuBar.add(viewMenu);
             }
@@ -1871,7 +1835,7 @@ public class MapPanel extends JPanel {
                         putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
                     }
                     public void actionPerformed(ActionEvent e) {
-                        JOptionPane.showInternalMessageDialog(mapPanel, ABOUT_MSG, "About MapPanel ...", JOptionPane.PLAIN_MESSAGE);
+                        JOptionPane.showInternalMessageDialog(mapPanel, String.format(ABOUT_MSG, mapPanel.getTileServer()), "About MapPanel ...", JOptionPane.PLAIN_MESSAGE);
                     }
                 });
                 menuBar.add(helpMenu);
@@ -1884,20 +1848,7 @@ public class MapPanel extends JPanel {
         }
     }
 
-    public static MapPanel createMapPanel(Point mapPosition, int zoom) {
-        MapPanel mapPanel = new MapPanel(mapPosition, zoom);
-        mapPanel.getOverlayPanel().setVisible(false);
-        ((JComponent)mapPanel.getControlPanel()).setVisible(false);
-        return mapPanel;
-    }
-
-    public static Gui createGui(Point mapPosition, int zoom) {
-        MapPanel mapPanel = createMapPanel(mapPosition, zoom);
-        return new MapPanel.Gui(mapPanel);
-    }
-
     public static void launchUI() {
-
         final JFrame frame = new JFrame();
         frame.setTitle("Map Panel");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
