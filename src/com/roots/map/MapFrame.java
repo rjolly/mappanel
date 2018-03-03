@@ -147,15 +147,19 @@ public class MapFrame extends Frame {
 	}
 
 	private boolean showInfoPanel() {
-		return prefs.getBoolean(getKey("showInfoPanel"), Boolean.parseBoolean(properties.getProperty("showInfoPanel" ,"false")));
+		return getBoolean("showInfoPanel");
 	}
 
 	private boolean showControlPanel() {
-		return prefs.getBoolean(getKey("showControlPanel"), Boolean.parseBoolean(properties.getProperty("showControlPanel" ,"false")));
+		return getBoolean("showControlPanel");
 	}
 
 	private boolean showSearchPanel() {
-		return prefs.getBoolean(getKey("showSearchPanel"), Boolean.parseBoolean(properties.getProperty("showSearchPanel" ,"false")));
+		return getBoolean("showSearchPanel");
+	}
+
+	private boolean getBoolean(final String str) {
+		return prefs.getBoolean(getKey(str), Boolean.parseBoolean(properties.getProperty(str ,"false")));
 	}
 
 	@Override
