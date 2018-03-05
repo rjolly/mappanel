@@ -1,12 +1,9 @@
 package com.roots.map;
 
 import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
@@ -45,13 +42,9 @@ public class MapFrame extends Frame {
 		}
 		setFrameIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent16.gif")));
 		setIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent24.gif")));
-		addComponentListener(new ComponentAdapter() {
-			public void componentShown(final ComponentEvent e) {
-				updateLocation();
-			}
-		});
 		setOptionPanel(options);
 		setScheme("geo");
+		setURI(getHome());
 	}
 
 	private void setURI(final String str) {
@@ -63,41 +56,18 @@ public class MapFrame extends Frame {
 	}
 
 	@Override
-	public URI getURI() {
-		if (gui != null) try {
-			final MapPanel panel = gui.getMapPanel();
-			final double[] location = panel.getLocationAsDouble();
-			String str = String.format(Locale.ROOT, "%f,%f", location[1], location[0]);
-			final int zoom = panel.getZoom();
-			if (zoom != 8) {
-				str += ";zoom=" + zoom;
-			}
-			return new URI("geo", str, null);
-		} catch (final URISyntaxException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
 	public void open() {
 		if (gui == null) {
 			gui = new MapPanel.Gui();
+			update();
 			prefs.addPreferenceChangeListener(listener);
 			getContentPane().add(gui, BorderLayout.CENTER);
 			gui.getMapPanel().getOverlayPanel().setVisible(showInfoPanel());
 			gui.getMapPanel().getControlPanel().setVisible(showControlPanel());
 			gui.getMapPanel().getSearchPanel().setVisible(showSearchPanel());
 			setJMenuBar(gui.createMenuBar());
-			setURI(getHome());
-			update();
-		} else {
-			updateLocation();
 		}
-	}
-
-	private void updateLocation() {
-		final URI uri = super.getURI();
+		final URI uri = getURI();
 		if (uri != null) {
 			final Map<String, String> map = new HashMap<>();
 			final String ssp = uri.getSchemeSpecificPart();
@@ -112,6 +82,8 @@ public class MapFrame extends Frame {
 			final MapPanel panel = gui.getMapPanel();
 			if (map.containsKey("zoom")) {
 				panel.setZoom(Integer.parseInt(map.get("zoom")));
+			} else if (panel.getZoom() == 0) {
+				panel.setZoom(8);
 			}
 			panel.setLocation(Double.parseDouble(s[1]), Double.parseDouble(s[0]));
 		}
@@ -119,7 +91,7 @@ public class MapFrame extends Frame {
 
 	@Override
 	public void close() {
-		setURI((URI) null);
+		setURI(getHome());
 		getContentPane().remove(gui);
 		prefs.removePreferenceChangeListener(listener);
 		gui = null;
