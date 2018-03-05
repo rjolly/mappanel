@@ -11,9 +11,10 @@ import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import linoleum.application.Frame;
 
-public class MapFrame extends Frame {
+public class MapFrame extends Frame implements Runnable {
 	private final OptionPanel options = new OptionPanel();
 	private final PreferenceChangeListener listener = new PreferenceChangeListener() {
 		@Override
@@ -67,6 +68,10 @@ public class MapFrame extends Frame {
 			gui.getMapPanel().getSearchPanel().setVisible(showSearchPanel());
 			setJMenuBar(gui.createMenuBar());
 		}
+		SwingUtilities.invokeLater(this);
+	}
+
+	public void run() {
 		final URI uri = getURI();
 		if (uri != null) {
 			final Map<String, String> map = new HashMap<>();
