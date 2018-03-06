@@ -1,9 +1,12 @@
 package com.roots.map;
 
 import java.awt.BorderLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
@@ -21,6 +24,14 @@ public class MapFrame extends Frame implements Runnable {
 		public void preferenceChange(final PreferenceChangeEvent evt) {
 			if (evt.getKey().equals(getKey("tileServer"))) {
 				update();
+			}
+		}
+	};
+	private final PropertyChangeListener locationListener = new PropertyChangeListener() {
+		@Override
+		public void propertyChange(final PropertyChangeEvent evt) {
+			if (evt.getPropertyName().equals("mapPosition") || evt.getPropertyName().equals("zoom")) {
+				updateLocation();
 			}
 		}
 	};
@@ -60,6 +71,7 @@ public class MapFrame extends Frame implements Runnable {
 	public void open() {
 		if (gui == null) {
 			gui = new MapPanel.Gui();
+			gui.getMapPanel().addPropertyChangeListener(locationListener);
 			update();
 			prefs.addPreferenceChangeListener(listener);
 			getContentPane().add(gui, BorderLayout.CENTER);
@@ -94,11 +106,27 @@ public class MapFrame extends Frame implements Runnable {
 		}
 	}
 
+	private void updateLocation() {
+		try {
+			final MapPanel panel = gui.getMapPanel();
+			final double[] location = panel.getLocationAsDouble();
+			String str = String.format(Locale.ROOT, "%f,%f", location[1], location[0]);
+			final int zoom = panel.getZoom();
+			if (zoom != 8) {
+				str += ";zoom=" + zoom;
+			}
+			setURI(new URI("geo", str, null));
+		} catch (final URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void close() {
 		setURI(getHome());
 		getContentPane().remove(gui);
 		prefs.removePreferenceChangeListener(listener);
+		gui.getMapPanel().removePropertyChangeListener(locationListener);
 		gui = null;
 	}
 
