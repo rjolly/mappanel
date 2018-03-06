@@ -258,7 +258,7 @@ public class MapPanel extends JPanel {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     JOptionPane.showInternalMessageDialog(
-                            SwingUtilities.getWindowAncestor(MapPanel.this),
+                            MapPanel.this,
                             "The tileserver \"" + tileServer.getURL() + "\" could not be reached.\r\nMaybe configuring a http-proxy is required.",
                             "TileServer not reachable.", JOptionPane.ERROR_MESSAGE);
                 }
