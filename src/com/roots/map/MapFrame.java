@@ -11,22 +11,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
-import linoleum.application.Frame;
+import linoleum.application.PreferenceSupport;
 
-public class MapFrame extends Frame implements Runnable {
+public class MapFrame extends PreferenceSupport implements Runnable {
 	private final OptionPanel options = new OptionPanel();
-	private final PreferenceChangeListener listener = new PreferenceChangeListener() {
-		@Override
-		public void preferenceChange(final PreferenceChangeEvent evt) {
-			if (evt.getKey().equals(getKey("tileServer"))) {
-				update();
-			}
-		}
-	};
 	private final PropertyChangeListener locationListener = new PropertyChangeListener() {
 		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
@@ -38,6 +29,13 @@ public class MapFrame extends Frame implements Runnable {
 	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
 	private final Properties properties = new Properties();
 	private MapPanel.Gui gui;
+
+	@Override
+	public void preferenceChange(final PreferenceChangeEvent evt) {
+		if (evt.getKey().equals(getKey("tileServer"))) {
+			update();
+		}
+	}
 
 	public MapFrame() {
 		setName("Maps");
@@ -73,7 +71,7 @@ public class MapFrame extends Frame implements Runnable {
 			gui = new MapPanel.Gui();
 			gui.getMapPanel().addPropertyChangeListener(locationListener);
 			update();
-			prefs.addPreferenceChangeListener(listener);
+			prefs.addPreferenceChangeListener(this);
 			getContentPane().add(gui, BorderLayout.CENTER);
 			gui.getMapPanel().getOverlayPanel().setVisible(showInfoPanel());
 			gui.getMapPanel().getControlPanel().setVisible(showControlPanel());
@@ -125,7 +123,7 @@ public class MapFrame extends Frame implements Runnable {
 	public void close() {
 		setURI(getHome());
 		getContentPane().remove(gui);
-		prefs.removePreferenceChangeListener(listener);
+		prefs.removePreferenceChangeListener(this);
 		gui.getMapPanel().removePropertyChangeListener(locationListener);
 		gui = null;
 	}
@@ -144,35 +142,31 @@ public class MapFrame extends Frame implements Runnable {
 	}
 
 	private String getTileServer() {
-		return prefs.get(getKey("tileServer"), properties.getProperty("tileServer"));
+		return getPref("tileServer");
 	}
 
 	private String getHome() {
-		return prefs.get(getKey("home"), properties.getProperty("home" ,""));
+		return getPref("home");
 	}
 
 	private boolean showInfoPanel() {
-		return getBoolean("showInfoPanel");
+		return getBooleanPref("showInfoPanel");
 	}
 
 	private boolean showControlPanel() {
-		return getBoolean("showControlPanel");
+		return getBooleanPref("showControlPanel");
 	}
 
 	private boolean showSearchPanel() {
-		return getBoolean("showSearchPanel");
-	}
-
-	private boolean getBoolean(final String str) {
-		return prefs.getBoolean(getKey(str), Boolean.parseBoolean(properties.getProperty(str ,"false")));
+		return getBooleanPref("showSearchPanel");
 	}
 
 	@Override
 	public void save() {
-		prefs.put(getKey("tileServer"), options.getTextField1().getText());
-		prefs.put(getKey("home"), options.getTextField2().getText());
-		prefs.putBoolean(getKey("showInfoPanel"), options.getCheckBox1().isSelected());
-		prefs.putBoolean(getKey("showControlPanel"), options.getCheckBox2().isSelected());
-		prefs.putBoolean(getKey("showSearchPanel"), options.getCheckBox3().isSelected());
+		putPref("tileServer", options.getTextField1().getText());
+		putPref("home", options.getTextField2().getText());
+		putBooleanPref("showInfoPanel", options.getCheckBox1().isSelected());
+		putBooleanPref("showControlPanel", options.getCheckBox2().isSelected());
+		putBooleanPref("showSearchPanel", options.getCheckBox3().isSelected());
 	}
 }
