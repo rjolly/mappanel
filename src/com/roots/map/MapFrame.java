@@ -39,6 +39,7 @@ public class MapFrame extends PreferenceSupport implements Runnable {
 
 	public MapFrame() {
 		setName("Maps");
+		setDescription("MapPanel renders OpenstreetMaps using just basic java");
 		setClosable(true);
 		setIconifiable(true);
 		setMaximizable(true);
