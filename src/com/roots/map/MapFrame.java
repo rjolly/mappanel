@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
 import javax.swing.ImageIcon;
@@ -27,7 +26,6 @@ public class MapFrame extends PreferenceSupport implements Runnable {
 		}
 	};
 	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
-	private final Properties properties = new Properties();
 	private MapPanel.Gui gui;
 
 	@Override
@@ -46,11 +44,6 @@ public class MapFrame extends PreferenceSupport implements Runnable {
 		setResizable(true);
 		setSize(800, 600);
 		setTitle("Maps");
-		try {
-			properties.load(getClass().getResourceAsStream("MapPanel.properties"));
-		} catch (final IOException  e) {
-			e.printStackTrace();
-		}
 		setFrameIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent16.gif")));
 		setIcon(new ImageIcon(getClass().getResource("/toolbarButtonGraphics/development/WebComponent24.gif")));
 		setOptionPanel(options);
