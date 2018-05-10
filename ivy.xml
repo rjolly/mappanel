@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ivy-module version="2.0">
-    <info module="mappanel" organisation="com.github.rjolly" revision="1.0"/>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+    <info module="mappanel" organisation="com.github.rjolly" revision="1.0">
+        <description homepage="http://github.com/srutz/mappanel/"/>
+    </info>
     <configurations>
         <conf name="default" extends="runtime,master"/>
         <conf name="master"/>
@@ -8,9 +10,18 @@
         <conf name="runtime"/>
         <conf name="compile-test"/>
         <conf name="runtime-test"/>
+        <conf name="sources"/>
+        <conf name="javadoc"/>
+        <conf name="pom"/>
     </configurations>
+    <publications>
+        <artifact name="mappanel" type="jar" ext="jar" conf="master"/>
+        <artifact name="mappanel" type="source" ext="jar" conf="sources" e:classifier="sources"/>
+        <artifact name="mappanel" type="javadoc" ext="jar" conf="javadoc" e:classifier="javadoc"/>
+        <artifact name="mappanel" type="pom" ext="pom" conf="pom"/>
+    </publications>
     <dependencies>
-        <dependency org="net.java.linoleum" name="application" rev="1.5" conf="compile->master;runtime->default"/>
+        <dependency org="net.java.linoleum" name="application" rev="1.6" conf="compile->master;runtime->default"/>
         <dependency org="net.java.linoleum" name="jlfgr" rev="1_0" conf="runtime->default"/>
     </dependencies>
 </ivy-module>

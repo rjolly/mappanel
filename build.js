@@ -1,10 +1,19 @@
-mkdir("bin");
+mkdir("build");
+mkdir("build/classes");
+mkdir("build/sources");
+mkdir("build/javadoc");
 
-javac("src", "bin");
-copy("res", "bin");
+javac("src", "build/classes");
+copy("res", "build/classes");
+copy("src", "build/sources");
+copy("res/com", "build/sources/com");
+javadoc("src", "build/javadoc");
 
 mkdir("dist");
 var name = "mappanel";
-jar("dist/" + name + ".jar", "bin");
+jar("dist/" + name + ".jar", "build/classes");
+jar("dist/" + name + "-source.jar", "build/sources");
+jar("dist/" + name + "-javadoc.jar", "build/javadoc");
+cp("pom.xml", "dist/" + name + ".pom")
 
 publish("dist")

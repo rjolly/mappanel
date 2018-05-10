@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.rjolly</groupId>
+  <artifactId>mappanel</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+  <url>http://github.com/srutz/mappanel/</url>
+  <description>MapPanel renders OpenstreetMaps using just basic java. Rendering is done from a tileserver and uses some multithreaded tile loading, caching and zooming. Free for everyone to build his own stuff on.</description>
+  <licenses>
+    <license>
+      <name>Eclipse</name>
+      <url>https://www.eclipse.org/legal/epl-v10.html</url>
+    </license>
+  </licenses>
+  <name>mappanel</name>
+  <organization>
+    <name>com.github.srutz</name>
+  </organization>
+  <scm>
+    <url>git@github.com:rjolly/mappanel.git</url>
+    <connection>scm:git:git@github.com:rjolly/mappanel.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>srutz</id>
+      <name>Stepan Rutz</name>
+      <url>http://github.com/srutz</url>
+    </developer>
+    <developer>
+      <id>rjolly</id>
+      <name>Raphael Jolly</name>
+      <url>http://github.com/rjolly</url>
+    </developer>
+  </developers>
+  <dependencies>
+    <dependency>
+      <groupId>net.java.linoleum</groupId>
+      <artifactId>application</artifactId>
+      <version>1.6</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.java.linoleum</groupId>
+      <artifactId>jlfgr</artifactId>
+      <version>1_0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
