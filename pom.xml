@@ -42,11 +42,5 @@
       <version>1.6</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>net.java.linoleum</groupId>
-      <artifactId>jlfgr</artifactId>
-      <version>1_0</version>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 </project>
