@@ -1,6 +1,7 @@
 package com.roots.map;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -11,7 +12,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.Preferences;
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.SwingUtilities;
 import linoleum.application.PreferenceSupport;
 
@@ -73,6 +77,22 @@ public class MapFrame extends PreferenceSupport implements Runnable {
 			setJMenuBar(gui.createMenuBar());
 		}
 		SwingUtilities.invokeLater(this);
+	}
+
+	@Override
+	public void setJMenuBar(final JMenuBar menuBar) {
+		final JMenu viewMenu = menuBar.getMenu(1);
+		viewMenu.addSeparator();
+		viewMenu.add(new AbstractAction("Preferences") {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					getApplicationManager().open(new URI("prefs", getName(), null));
+				} catch (final URISyntaxException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		super.setJMenuBar(menuBar);
 	}
 
 	public void run() {
